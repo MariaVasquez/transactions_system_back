@@ -12,7 +12,4 @@ public interface TransactionMapper {
     TransactionResponse toDto(Transaction transaction);
     TransactionEntity toEntity(Transaction transaction);
     Transaction toDomain(TransactionEntity entity);
-
-
-
 }
