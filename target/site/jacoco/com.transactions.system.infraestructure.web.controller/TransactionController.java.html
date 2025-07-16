@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TransactionController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">system</a> &gt; <a href="index.source.html" class="el_package">com.transactions.system.infraestructure.web.controller</a> &gt; <span class="el_source">TransactionController.java</span></div><h1>TransactionController.java</h1><pre class="source lang-java linenums">package com.transactions.system.infraestructure.web.controller;
+
+import com.transactions.system.application.usecase.interfaces.CreateTransactionUseCase;
+import com.transactions.system.application.usecase.interfaces.GetAllTransactionUseCase;
+import com.transactions.system.infraestructure.web.dto.request.TransactionRequestDto;
+import com.transactions.system.infraestructure.web.dto.response.TransactionPageResponseDto;
+import com.transactions.system.infraestructure.web.dto.response.TransactionResponseDto;
+import com.transactions.system.shared.constants.ResponseCode;
+import com.transactions.system.shared.dto.GenericResponseDto;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Mono;
+
+@RestController
+@RequiredArgsConstructor
+@RequestMapping(&quot;/api/transactions&quot;)
+@Tag(name = &quot;Transacciones&quot;, description = &quot;API para gestionar transacciones&quot;)
+public class TransactionController {
+
+    private final CreateTransactionUseCase createTransactionUseCase;
+    private final GetAllTransactionUseCase getAllTransactionUseCase;
+
+    @PostMapping
+    @Operation(
+            summary = &quot;Crear transacción&quot;,
+            description = &quot;Permite crear una nueva transacción&quot;,
+            responses = {
+                    @ApiResponse(responseCode = &quot;201&quot;, description = &quot;Transacción creada&quot;,
+                            content = @Content(schema = @Schema(implementation = TransactionResponseDto.class))),
+                    @ApiResponse(responseCode = &quot;400&quot;, description = &quot;Datos inválidos&quot;,
+                            content = @Content)
+            }
+    )
+    public Mono&lt;GenericResponseDto&lt;TransactionResponseDto&gt;&gt; createFranchise(
+            @org.springframework.web.bind.annotation.RequestBody
+            @Valid
+            @RequestBody(
+                    description = &quot;Datos necesarios para registrar una franquicia&quot;,
+                    required = true,
+                    content = @Content(schema = @Schema(implementation = TransactionRequestDto.class))
+            )
+            TransactionRequestDto requestDto
+    ) {
+<span class="nc" id="L52">        return createTransactionUseCase.execute(requestDto)</span>
+<span class="nc" id="L53">                .map(data -&gt; new GenericResponseDto&lt;&gt;(ResponseCode.TRANSACTION_CREATED, data));</span>
+    }
+
+    @GetMapping
+    @Operation(
+            summary = &quot;Listar transacciones&quot;,
+            description = &quot;Obtiene una lista paginada de transacciones&quot;,
+            responses = {
+                    @ApiResponse(responseCode = &quot;200&quot;, description = &quot;Transacciones obtenidas exitosamente&quot;,
+                            content = @Content(schema = @Schema(implementation = TransactionPageResponseDto.class))),
+                    @ApiResponse(responseCode = &quot;400&quot;, description = &quot;Parámetros inválidos&quot;,
+                            content = @Content)
+            }
+    )
+    public Mono&lt;GenericResponseDto&lt;TransactionPageResponseDto&gt;&gt; getAllTransactions(
+            @Parameter(description = &quot;Página actual&quot;, example = &quot;0&quot;)
+            @RequestParam(defaultValue = &quot;0&quot;) int page,
+            @Parameter(description = &quot;Tamaño de la página&quot;, example = &quot;10&quot;)
+            @RequestParam(defaultValue = &quot;10&quot;) int size
+    ) {
+<span class="nc" id="L73">        return getAllTransactionUseCase.execute(page, size)</span>
+<span class="nc" id="L74">                .map(data -&gt; new GenericResponseDto&lt;&gt;(ResponseCode.TRANSACTION_SUCCESS, data));</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

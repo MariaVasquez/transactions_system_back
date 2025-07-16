@@ -1,18 +1,20 @@
 package com.transactions.system.infraestructure.web.dto.request;
 
-import com.transactions.system.domain.model.Status;
+import com.transactions.system.domain.model.TransactionStatus;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import lombok.Builder;
 import lombok.Data;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Data
+@Builder
 @Schema(description = "DTO para registrar o actualizar una transacción")
-public class TransactionRequest {
+public class TransactionRequestDto {
     @NotBlank(message = "El nombre no puede estar vacío")
     @Schema(description = "Nombre de la transacción", example = "Compra supermercado")
     private String name;
@@ -28,5 +30,5 @@ public class TransactionRequest {
 
     @NotNull(message = "El estado es obligatorio")
     @Schema(description = "Estado de la transacción", example = "PENDIENTE")
-    private Status status;
+    private TransactionStatus transactionStatus;
 }

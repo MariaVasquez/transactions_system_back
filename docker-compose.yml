@@ -1,15 +1,64 @@
+name: transactions-system
 services:
-  mongodb:
-    image: mongo:6.0
-    container_name: mongo_container
-    restart: always
-    ports:
-      - "27017:27017"
+  mongo-db-ts:
+    image: mongo:7.0.5-rc0
+    container_name: mongo-db-ts
+    hostname: mongodb
     environment:
-      MONGO_INITDB_ROOT_USERNAME: admin
-      MONGO_INITDB_ROOT_PASSWORD: admin123
+      MONGO_INITDB_ROOT_USERNAME: sa
+      MONGO_INITDB_ROOT_PASSWORD: sa
+      MONGO_INITDB_DATABASE: transactions_system_db
+    ports:
+      - "28017:27017"
+    networks:
+      - transaction_net
     volumes:
       - mongo_data:/data/db
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh --quiet
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 40s
+
+  redis-ts:
+    image: redis:7.2
+    container_name: redis-server-ts
+    ports:
+      - "6379:6379"
+    networks:
+      - transaction_net
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  ms-transactions_system:
+    image: ms-transactions_system:latest
+    container_name: ms-transactions_system
+    ports:
+      - "8080:8080"
+    env_file:
+      - .env
+    networks:
+      - transaction_net
+    depends_on:
+      - mongo-db-ts
+      - redis-ts
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8080/actuator/health" ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
 
 volumes:
   mongo_data:
+  redis_data:
+
+networks:
+  transaction_net:
+    driver: bridge

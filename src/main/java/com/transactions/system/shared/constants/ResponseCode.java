@@ -8,15 +8,14 @@ import lombok.Getter;
 public enum ResponseCode {
 
     DATABASE_ERROR("TRAPP_ERR_1",500,"Database error"),
-    FRANCHISE_NOT_FOUND("TRAPP_ERR_2",404,"Franchise not found"),
-    FRANCHISE_EXIST("TRAPP_ERR_3",409,"Franchise {0} already exist"),
-    BRANCH_EXIST("TRAPP_ERR_3",409,"Branch {0} already exist"),
-    PRODUCT_EXIST("TRAPP_ERR_4",409,"Product {0} already exist"),
-    PRODUCT_NOT_FOUND("TRAPP_ERR_5",404,"Product not found"),
-    BRANCH_NOT_FOUND("TRAPP_ERR_6",404,"Branch not found"),
+    TRANSACTION_NOT_FOUND("TRAPP_ERR_2",404,"Transaction not found"),
+    TRANSACTIONS_EMPTY("TRAPP_ERR_3",400,"Transactions empty"),
+    TRANSACTION_EXIST("TRAPP_ERR_3",400,"Transactions is exist"),
     TRANSACTION_SUCCESS("TRAPP_SUCC_1",200, "Ok"),
     TRANSACTION_CREATED("TRAPP_SUCC_1",201, "Created"),
-    UNEXPECTED_ERROR("TRAPP_ERR_7",500,"Unexpected error");
+    UNEXPECTED_ERROR("TRAPP_ERR_4",500,"Unexpected error"),
+    PAYMENT_AMOUNT_TOO_LOW("TRAPP_ERR_5",400,"El monto del pago no es suficiente para cubrir ninguna de las transacciones pendientes."),
+    INVALID_TRANSACTION_STATUS("TRAPP_ERR_6", 400, "Invalid transaction status. Only 'PENDIENTE' is allowed when creating.");
 
     private final String code;
     private final int httpStatus;

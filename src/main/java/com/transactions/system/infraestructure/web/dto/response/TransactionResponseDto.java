@@ -1,8 +1,9 @@
 package com.transactions.system.infraestructure.web.dto.response;
 
 
-import com.transactions.system.domain.model.Status;
+import com.transactions.system.domain.model.TransactionStatus;
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Builder;
 import lombok.Data;
 
 import java.math.BigDecimal;
@@ -10,8 +11,9 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Data
+@Builder
 @Schema(description = "Respuesta con los datos de una transacción")
-public class TransactionResponse {
+public class TransactionResponseDto {
     @Schema(description = "Identificador único de la transacción", example = "64a6e8c5b0d0f81024b9c001")
     private String id;
 
@@ -25,11 +27,11 @@ public class TransactionResponse {
     private BigDecimal amount;
 
     @Schema(description = "Estado actual de la transacción", example = "PENDIENTE")
-    private Status status;
+    private TransactionStatus transactionStatus;
 
     @Schema(description = "Fecha de creación del registro", example = "2025-07-09T15:30:00")
-    private LocalDateTime createdAt;
+    private LocalDateTime createdDate;
 
     @Schema(description = "Fecha de la última actualización", example = "2025-07-09T15:40:00")
-    private LocalDateTime updatedAt;
+    private LocalDateTime updatedDate;
 }

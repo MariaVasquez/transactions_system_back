@@ -17,9 +17,6 @@ public class SwaggerConfig {
     @Value("${swagger.server.local}")
     private String localUrl;
 
-    @Value("${swagger.server.prod}")
-    private String prodUrl;
-
     @Value("${spring.profiles.active:local}")
     private String activeProfile;
 

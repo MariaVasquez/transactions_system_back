@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>RedisCacheServiceImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">system</a> &gt; <a href="index.source.html" class="el_package">com.transactions.system.infraestructure.cache</a> &gt; <span class="el_source">RedisCacheServiceImpl.java</span></div><h1>RedisCacheServiceImpl.java</h1><pre class="source lang-java linenums">package com.transactions.system.infraestructure.cache;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.transactions.system.domain.port.RedisCacheService;
+import com.transactions.system.shared.constants.ResponseCode;
+import com.transactions.system.shared.exception.CustomException;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.ReactiveRedisTemplate;
+import org.springframework.stereotype.Repository;
+import reactor.core.publisher.Mono;
+
+import java.time.Duration;
+import java.util.Objects;
+
+@Repository
+public class RedisCacheServiceImpl implements RedisCacheService {
+
+    @Value(&quot;${cache.ttl:300}&quot;)
+    private Long cacheTtl;
+
+    private final ReactiveRedisTemplate&lt;String, String&gt; redisTemplate;
+    private final ObjectMapper objectMapper;
+
+    public RedisCacheServiceImpl(@Qualifier(&quot;jsonRedisTemplate&quot;) ReactiveRedisTemplate&lt;String, String&gt; redisTemplate,
+<span class="nc" id="L28">                                 ObjectMapper objectMapper) {</span>
+<span class="nc" id="L29">        this.redisTemplate = redisTemplate;</span>
+<span class="nc" id="L30">        this.objectMapper = objectMapper;</span>
+<span class="nc" id="L31">    }</span>
+
+    @Override
+    public &lt;T&gt; Mono&lt;T&gt; get(String key, TypeReference&lt;T&gt; typeReference) {
+<span class="nc" id="L35">        return redisTemplate.opsForValue().get(key)</span>
+<span class="nc" id="L36">                .filter(Objects::nonNull)</span>
+<span class="nc" id="L37">                .flatMap(json -&gt; Mono.fromCallable(() -&gt;</span>
+<span class="nc" id="L38">                        objectMapper.readValue(json, typeReference)</span>
+<span class="nc" id="L39">                ).onErrorMap(JsonProcessingException.class, e -&gt;</span>
+<span class="nc" id="L40">                        new CustomException(ResponseCode.UNEXPECTED_ERROR, e.getMessage())</span>
+                ));
+    }
+
+    @Override
+    public &lt;T&gt; Mono&lt;Void&gt; set(String key, T value) {
+<span class="nc" id="L46">        return Mono.fromCallable(() -&gt; objectMapper.writeValueAsString(value))</span>
+<span class="nc" id="L47">                .flatMap(json -&gt; redisTemplate.opsForValue()</span>
+<span class="nc" id="L48">                        .set(key, json, Duration.ofSeconds(cacheTtl))</span>
+<span class="nc" id="L49">                        .then()</span>
+                )
+<span class="nc" id="L51">                .onErrorMap(JsonProcessingException.class, e -&gt; e);</span>
+    }
+
+    @Override
+    public Mono&lt;Boolean&gt; delete(String key) {
+<span class="nc bnc" id="L56" title="All 2 branches missed.">        return redisTemplate.delete(key).map(count -&gt; count &gt; 0);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

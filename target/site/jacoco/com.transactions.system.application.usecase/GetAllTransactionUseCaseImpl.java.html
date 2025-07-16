@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>GetAllTransactionUseCaseImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">system</a> &gt; <a href="index.source.html" class="el_package">com.transactions.system.application.usecase</a> &gt; <span class="el_source">GetAllTransactionUseCaseImpl.java</span></div><h1>GetAllTransactionUseCaseImpl.java</h1><pre class="source lang-java linenums">package com.transactions.system.application.usecase;
+
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.transactions.system.application.mapper.TransactionMapper;
+import com.transactions.system.application.usecase.interfaces.GetAllTransactionUseCase;
+import com.transactions.system.domain.port.RedisCacheService;
+import com.transactions.system.domain.port.TransactionRepository;
+import com.transactions.system.infraestructure.web.dto.response.TransactionPageResponseDto;
+import com.transactions.system.infraestructure.web.dto.response.TransactionResponseDto;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+import reactor.core.publisher.Mono;
+
+import java.util.List;
+
+@Service
+@RequiredArgsConstructor
+<span class="nc" id="L20">@Slf4j</span>
+public class GetAllTransactionUseCaseImpl implements GetAllTransactionUseCase {
+    @Value(&quot;${TRANSACTION_PAGE_CACHE_KEY}&quot;)
+    private String cacheKeyFormat;
+
+    private final RedisCacheService redisCacheService;
+    private final TransactionRepository transactionRepository;
+    private final TransactionMapper mapper;
+
+    @Override
+    public Mono&lt;TransactionPageResponseDto&gt; execute(int page, int size) {
+<span class="nc" id="L31">        String cacheKey = buildCacheKey(page, size);</span>
+
+<span class="nc" id="L33">        return redisCacheService.get(cacheKey, new TypeReference&lt;List&lt;TransactionResponseDto&gt;&gt;() {})</span>
+<span class="nc" id="L34">                .switchIfEmpty(Mono.defer(() -&gt; loadAndCacheTransactions(page, size, cacheKey)))</span>
+<span class="nc" id="L35">                .flatMap(products -&gt; buildPageResponse(products, page, size));</span>
+    }
+
+    private String buildCacheKey(int page, int size) {
+<span class="nc" id="L39">        return String.format(cacheKeyFormat, page, size);</span>
+    }
+
+    private Mono&lt;List&lt;TransactionResponseDto&gt;&gt; loadAndCacheTransactions(int page, int size, String cacheKey) {
+<span class="nc" id="L43">        return transactionRepository.findAll(page, size)</span>
+<span class="nc" id="L44">                .map(mapper::toDto)</span>
+<span class="nc" id="L45">                .collectList()</span>
+<span class="nc" id="L46">                .flatMap(transactions -&gt;{</span>
+<span class="nc" id="L47">                                System.out.println(transactions);</span>
+<span class="nc" id="L48">                        return redisCacheService.set(cacheKey, transactions)</span>
+<span class="nc" id="L49">                                .thenReturn(transactions);}</span>
+                );
+    }
+
+    private Mono&lt;TransactionPageResponseDto&gt; buildPageResponse(List&lt;TransactionResponseDto&gt; transactions, int page, int size) {
+<span class="nc" id="L54">        return transactionRepository.getTotalTransaction()</span>
+<span class="nc" id="L55">                .map(total -&gt; TransactionPageResponseDto.builder()</span>
+<span class="nc" id="L56">                        .transactions(transactions)</span>
+<span class="nc" id="L57">                        .page(page)</span>
+<span class="nc" id="L58">                        .size(size)</span>
+<span class="nc" id="L59">                        .total(total)</span>
+<span class="nc" id="L60">                        .build());</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

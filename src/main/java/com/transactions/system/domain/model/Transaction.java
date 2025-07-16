@@ -14,7 +14,7 @@ public class Transaction {
     private String name;
     private BigDecimal amount;
     private LocalDate transactionDate;
-    private Status status;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
+    private TransactionStatus transactionStatus;
+    private LocalDateTime createdDate;
+    private LocalDateTime updatedDate;
 }

@@ -1,6 +1,6 @@
 package com.transactions.system.infraestructure.r2dbc.entity;
 
-import com.transactions.system.domain.model.Status;
+import com.transactions.system.domain.model.TransactionStatus;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
@@ -30,12 +30,14 @@ public class TransactionEntity {
 
     private BigDecimal amount;
 
-    private Status status;
+    private TransactionStatus transactionStatus;
+
+    private String paymentId;
 
     @CreatedDate
-    private LocalDateTime createdAt;
+    private LocalDateTime createdDate;
 
     @LastModifiedDate
-    private LocalDateTime updatedAt;
+    private LocalDateTime updatedDate;
 
 }

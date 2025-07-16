@@ -1,6 +1,6 @@
 package com.transactions.system.domain.model;
 
-public enum Status {
+public enum TransactionStatus {
     PENDIENTE,
     PAGADO,
     CANCELADO

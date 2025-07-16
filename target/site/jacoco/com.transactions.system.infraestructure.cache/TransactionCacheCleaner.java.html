@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TransactionCacheCleaner.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">system</a> &gt; <a href="index.source.html" class="el_package">com.transactions.system.infraestructure.cache</a> &gt; <span class="el_source">TransactionCacheCleaner.java</span></div><h1>TransactionCacheCleaner.java</h1><pre class="source lang-java linenums">package com.transactions.system.infraestructure.cache;
+
+import com.transactions.system.domain.port.RedisCacheService;
+import com.transactions.system.domain.port.TransactionRepository;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+
+import java.util.List;
+import java.util.stream.IntStream;
+
+@Component
+@RequiredArgsConstructor
+<span class="fc" id="L17">@Slf4j</span>
+public class TransactionCacheCleaner {
+
+    @Value(&quot;${TRANSACTION_PAGE_CACHE_KEY}&quot;)
+    private String cacheKeyFormat;
+
+    private final RedisCacheService redisCacheService;
+    private final TransactionRepository transactionRepository;
+
+    public Mono&lt;Void&gt; deleteAllTransactionPages() {
+<span class="nc" id="L27">        int pageSize = 10;</span>
+
+<span class="nc" id="L29">        return transactionRepository.getTotalTransaction()</span>
+<span class="nc" id="L30">                .defaultIfEmpty(0L)</span>
+<span class="nc" id="L31">                .flatMapMany(total -&gt; {</span>
+<span class="nc" id="L32">                    int totalPages = (int) Math.ceil((double) total / pageSize);</span>
+<span class="nc" id="L33">                    List&lt;String&gt; keys = IntStream.range(0, totalPages)</span>
+<span class="nc" id="L34">                            .mapToObj(page -&gt; String.format(cacheKeyFormat, page, pageSize))</span>
+<span class="nc" id="L35">                            .toList();</span>
+<span class="nc" id="L36">                    return Flux.fromIterable(keys);</span>
+                })
+<span class="nc" id="L38">                .flatMap(redisCacheService::delete)</span>
+<span class="nc" id="L39">                .doOnNext(deleted -&gt; log.info(&quot;¿Clave eliminada? {}&quot;, deleted))</span>
+<span class="nc" id="L40">                .then();</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>
