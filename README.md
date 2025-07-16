@@ -35,7 +35,7 @@ Este proyecto es una API REST que gestiona transacciones y pagos, desarrollada c
 
 | Tecnología       | Uso Principal                         |
 |------------------|----------------------------------------|
-| Java 17          | Lenguaje base                         |
+| Java 21          | Lenguaje base                         |
 | Spring WebFlux   | API reactiva                          |
 | MongoDB          | Base de datos NoSQL                   |
 | Redis            | Cache de resultados                   |
