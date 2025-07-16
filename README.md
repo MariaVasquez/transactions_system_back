@@ -15,7 +15,6 @@ Este proyecto es una API REST que gestiona transacciones y pagos, desarrollada c
 - [🧪 Pruebas](#-pruebas)
 - [📂 Endpoints Principales](#-endpoints-principales)
 - [📈 Monitorización](#-monitorización)
-- [📄 License](#-license)
 
 ---
 
@@ -79,7 +78,7 @@ SPRING_PROFILES_ACTIVE=prod
 CACHE_TTL=300
 ```
 
-🐳 Ejecutar con Docker
+## 🐳 Ejecutar con Docker
 🧱 1. Construir el .jar
 ```bash
 mvn clean package -DskipTests
@@ -108,7 +107,7 @@ MongoDB (localhost:27017)
 
 Redis (localhost:6379)
 
-▶️ Ejecutar sin Docker
+## ▶️ Ejecutar sin Docker
 Asegúrate de tener MongoDB y Redis corriendo localmente
 
 Crea el .env con las variables necesarias
@@ -118,7 +117,7 @@ Ejecuta la aplicación con:
 mvn spring-boot:run
 ```
 
-🧪 Pruebas
+## 🧪 Pruebas
 El proyecto incluye pruebas unitarias básicas en algunos casos de uso.
 ```bash
 mvn test
@@ -126,7 +125,7 @@ mvn test
 
 🧪 Algunas pruebas unitarias aún están pendientes por cobertura completa.
 
-📂 Endpoints Principales
+## 📂 Endpoints Principales
 Una vez corriendo, puedes acceder a la documentación Swagger:
 
 http://localhost:8080/api/docs
@@ -143,7 +142,7 @@ GET /api/transactions: Lista todas las transacciones (con paginación y caché)
 
 POST /api/transactions: Crear nueva transacción
 
-📈 Monitorización
+## 📈 Monitorización
 El servicio expone métricas y estado con Spring Boot Actuator:
 
 GET /actuator/health: Estado de salud
