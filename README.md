@@ -54,16 +54,26 @@ Este proyecto es una API REST que gestiona transacciones y pagos, desarrollada c
 El proyecto está dividido en capas según Clean Architecture:
 
 ```
-┌────────────────────────┐
-│ entrypoints │ ← Controllers, DTOs, Swagger
-├────────────────────────┤
-│ usecases │ ← Casos de uso (business logic)
-├────────────────────────┤
-│ domain/models │ ← Entidades y lógica de dominio
-├────────────────────────┤
-│ infra/db │ ← MongoRepository + RedisCache
-└────────────────────────┘
+┌────────────────────────────────────────────┐
+│ application/usecase       │ ← Casos de uso (lógica de negocio)
+├────────────────────────────────────────────┤
+│ domain/model              │ ← Entidades y lógica de dominio (DDD)
+├────────────────────────────────────────────┤
+│ domain/port               │ ← Interfaces (puertos de entrada/salida)
+├────────────────────────────────────────────┤
+│ infrastructure/r2dbc      │ ← MongoRepository (adaptadores primarios)
+├────────────────────────────────────────────┤
+│ infrastructure/cache      │ ← RedisCache (adaptadores secundarios)
+├────────────────────────────────────────────┤
+│ infrastructure/web        │ ← Controladores (endpoints HTTP)
+├────────────────────────────────────────────┤
+│ application/mapper        │ ← Conversores entre entidades y DTOs
+├────────────────────────────────────────────┤
+│ shared/dto, constants...  │ ← Objetos compartidos, constantes, excepciones
+└────────────────────────────────────────────┘
 ```
+
+> 🧠 **Nota**: Aunque no hay una carpeta llamada `entrypoints`, los controladores (`web`) y DTOs (`shared/dto`) cumplen ese rol. También se aplican principios de Domain-Driven Design (DDD) al dividir `domain` en `model` y `port`, separando claramente la lógica de negocio de las implementaciones técnicas.
 ---
 
 ## ⚙️ Configuración del Entorno
