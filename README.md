@@ -54,6 +54,7 @@ Este proyecto es una API REST que gestiona transacciones y pagos, desarrollada c
 
 El proyecto está dividido en capas según Clean Architecture:
 
+```
 ┌────────────────────────┐
 │ entrypoints │ ← Controllers, DTOs, Swagger
 ├────────────────────────┤
@@ -63,6 +64,7 @@ El proyecto está dividido en capas según Clean Architecture:
 ├────────────────────────┤
 │ infra/db │ ← MongoRepository + RedisCache
 └────────────────────────┘
+```
 ---
 
 ## ⚙️ Configuración del Entorno
@@ -75,23 +77,28 @@ PORT=8080
 MONGO_URI=mongodb://sa:sa@mongo-db-ts:27017/transactions_system_db?authSource=admin
 SPRING_PROFILES_ACTIVE=prod
 CACHE_TTL=300
+```
 
 🐳 Ejecutar con Docker
 🧱 1. Construir el .jar
 ```bash
 mvn clean package -DskipTests
+```
 
 🐳 2. Construir la imagen Docker
 ```bash
 docker build -t transaction-app .
+```
 
 📦 3. Levantar todo con Docker Compose
 ```bash
 docker-compose up
+```
 
 También puedes usar:
 ```bash
 docker-compose up --build
+```
 
 Esto levantará:
 
@@ -109,11 +116,13 @@ Crea el .env con las variables necesarias
 Ejecuta la aplicación con:
 ```bash
 mvn spring-boot:run
+```
 
 🧪 Pruebas
 El proyecto incluye pruebas unitarias básicas en algunos casos de uso.
 ```bash
 mvn test
+```
 
 🧪 Algunas pruebas unitarias aún están pendientes por cobertura completa.
 
